@@ -15,6 +15,11 @@ protected: // 仅从序列化创建
 // 特性
 public:
 	int m_Dot[512];
+	int num_channel ;
+	int Data[512];
+	int lbtn_beg;
+	int lbtn_end;
+	
 
 
 // 操作

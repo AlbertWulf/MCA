@@ -32,6 +32,7 @@ CMCADoc::CMCADoc()
 	for(int i=0;i<512;i++) 
 	{ 
 		m_Dot[i]=0;
+		Data[i]=0;
 	}
 
 	// TODO: 在此添加一次性构造代码

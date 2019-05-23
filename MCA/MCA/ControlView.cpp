@@ -1,12 +1,19 @@
-// ControlView.cpp : ÊµÏÖÎÄ¼ş
+ï»¿// ControlView.cpp : å®ç°æ–‡ä»¶
 //
 
 #include "stdafx.h"
 #include<math.h>
+
+#include <stdio.h>
+#include <string>
+#include <iostream>
 #include "MCA.h"
 #include "ControlView.h"
 #include "MCADoc.h"
 #include "MainFrm.h"
+#include <fstream>
+#include <time.h>
+#include <algorithm>
 
 
 // CControlView
@@ -17,6 +24,7 @@ CControlView::CControlView()
 	: CFormView(CControlView::IDD)
 	, m_nHight(0)
 	, m_nPeriod(0)
+	, mul(1)
 	, m_bCheckAuto(FALSE)
 {
 
@@ -51,7 +59,7 @@ BEGIN_MESSAGE_MAP(CControlView, CFormView)
 END_MESSAGE_MAP()
 
 
-// CControlView Õï¶Ï
+// CControlView è¯Šæ–­
 
 #ifdef _DEBUG
 void CControlView::AssertValid() const
@@ -68,103 +76,122 @@ void CControlView::Dump(CDumpContext& dc) const
 #endif //_DEBUG
 
 
-// CControlView ÏûÏ¢´¦Àí³ÌĞò
+// CControlView æ¶ˆæ¯å¤„ç†ç¨‹åº
 
 
 void CControlView::OnBnClickedButton1()
 {
-	// TODO: ÔÚ´ËÌí¼Ó¿Ø¼şÍ¨Öª´¦Àí³ÌĞò´úÂë
+	// TODO: åœ¨æ­¤æ·»åŠ æ§ä»¶é€šçŸ¥å¤„ç†ç¨‹åºä»£ç 
 }
 
 
 void CControlView::OnBnClickedDialogControl()
 {
-	// TODO: ÔÚ´ËÌí¼Ó¿Ø¼şÍ¨Öª´¦Àí³ÌĞò´úÂë
+	// TODO: åœ¨æ­¤æ·»åŠ æ§ä»¶é€šçŸ¥å¤„ç†ç¨‹åºä»£ç 
 }
 
 
 //void CControlView::OnEnChangeEdit2()
 //{
-	// TODO:  Èç¹û¸Ã¿Ø¼şÊÇ RICHEDIT ¿Ø¼ş£¬Ëü½«²»
-	// ·¢ËÍ´ËÍ¨Öª£¬³ı·ÇÖØĞ´ CFormView::OnInitDialog()
-	// º¯Êı²¢µ÷ÓÃ CRichEditCtrl().SetEventMask()£¬
-	// Í¬Ê±½« ENM_CHANGE ±êÖ¾¡°»ò¡±ÔËËãµ½ÑÚÂëÖĞ¡£
+	// TODO:  å¦‚æœè¯¥æ§ä»¶æ˜¯ RICHEDIT æ§ä»¶ï¼Œå®ƒå°†ä¸
+	// å‘é€æ­¤é€šçŸ¥ï¼Œé™¤éé‡å†™ CFormView::OnInitDialog()
+	// å‡½æ•°å¹¶è°ƒç”¨ CRichEditCtrl().SetEventMask()ï¼Œ
+	// åŒæ—¶å°† ENM_CHANGE æ ‡å¿—â€œæˆ–â€è¿ç®—åˆ°æ©ç ä¸­ã€‚
 
 //#1015
 
-	// TODO:  ÔÚ´ËÌí¼Ó¿Ø¼şÍ¨Öª´¦Àí³ÌĞò´úÂë
+	// TODO:  åœ¨æ­¤æ·»åŠ æ§ä»¶é€šçŸ¥å¤„ç†ç¨‹åºä»£ç 
 //}
 
 
 void CControlView::OnInitialUpdate()
 {
 	CFormView::OnInitialUpdate();
-	m_nHight = 10.0;
+	m_nHight = 1.0;
 	m_nPeriod = 0.1;
 	UpdateData(FALSE);
 	m_ButtonClear.EnableWindow(FALSE);
+	FILE*f=fopen("D:\\mydevelopdata\\VSCODE\\MCA\\sldata.txt","r");
+	for(int i = 0;i<512;i++){
+		fscanf(f,"%d",&((CMCADoc*)m_pDocument)->Data[i]);
+	}
 
-
-	// TODO: ÔÚ´ËÌí¼Ó×¨ÓÃ´úÂëºÍ/»òµ÷ÓÃ»ùÀà
+	// TODO: åœ¨æ­¤æ·»åŠ ä¸“ç”¨ä»£ç å’Œ/æˆ–è°ƒç”¨åŸºç±»
 }
 
 
 void CControlView::OnBnClickedButtonPaint()
 {
 	
-	UpdateData(TRUE);//»ñÈ¡ÆÁÄ»ÖµÖÁ±äÁ¿
-	//ÉèÖÃ°´Å¥×´Ì¬
+	UpdateData(TRUE);//è·å–å±å¹•å€¼è‡³å˜é‡
+	//è®¾ç½®æŒ‰é’®çŠ¶æ€
 	m_ButtonPaint.EnableWindow(FALSE);
 	m_ButtonClear.EnableWindow(TRUE);
-	//ÉèÖÃÇúÏßÖµ
-
+	//è®¾ç½®æ›²çº¿å€¼
+	
+	
 	for (int i=0;i<512;i++) 
-	{ ((CMCADoc*)m_pDocument)->m_Dot[i]=m_nHight*(1+sin(m_nPeriod*i)); } 
-	((CMCADoc*)GetDocument())->UpdateAllViews(NULL); //ÖØ»­ÇúÏß
+		
+	{ 
+		//srand(time(NULL));
+		//((CMCADoc*)m_pDocument)->m_Dot[i]=m_nHight*(1+cos(m_nPeriod*i));
+		
+		((CMCADoc*)m_pDocument)->m_Dot[i] = ((CMCADoc*)m_pDocument)->m_Dot[i]+0.2*((CMCADoc*)m_pDocument)->Data[i]+rand()%3;		
+		//((CMCADoc*)m_pDocument)->Data[i]=1.02*(((CMCADoc*)m_pDocument)->Data[i])+1;
+	} 
+	((CMCADoc*)GetDocument())->UpdateAllViews(NULL); //é‡ç”»æ›²çº¿
 
 
 
-	// TODO: ÔÚ´ËÌí¼Ó¿Ø¼şÍ¨Öª´¦Àí³ÌĞò´úÂë
+	// TODO: åœ¨æ­¤æ·»åŠ æ§ä»¶é€šçŸ¥å¤„ç†ç¨‹åºä»£ç 
 }
 
 
 void CControlView::OnMenuPaint()
 {
-	// TODO: ÔÚ´ËÌí¼ÓÃüÁî´¦Àí³ÌĞò´úÂë
+	// TODO: åœ¨æ­¤æ·»åŠ å‘½ä»¤å¤„ç†ç¨‹åºä»£ç 
 	OnBnClickedButtonPaint();
 }
 
 
 void CControlView::OnMenuClear()
 {
-	// TODO: ÔÚ´ËÌí¼ÓÃüÁî´¦Àí³ÌĞò´úÂë
+	// TODO: åœ¨æ­¤æ·»åŠ å‘½ä»¤å¤„ç†ç¨‹åºä»£ç 
 	OnBnClickedButtonClear();
 }
 
 
 void CControlView::OnBnClickedButtonClear()
 {
-	// TODO: ÔÚ´ËÌí¼Ó¿Ø¼şÍ¨Öª´¦Àí³ÌĞò´úÂë
-		 //ÉèÖÃ°´Å¥×´Ì¬
+	// TODO: åœ¨æ­¤æ·»åŠ æ§ä»¶é€šçŸ¥å¤„ç†ç¨‹åºä»£ç 
+		 //è®¾ç½®æŒ‰é’®çŠ¶æ€
     m_ButtonPaint.EnableWindow(TRUE);
     m_ButtonClear.EnableWindow(FALSE);
-     //ÉèÖÃÇúÏßÖµ
+     //è®¾ç½®æ›²çº¿å€¼
       for (int i=0;i<512;i++)  
       {
          ((CMCADoc*)m_pDocument)->m_Dot[i]=0;
         }
-       //ÖØ»­ÇúÏß
+       //é‡ç”»æ›²çº¿
    ((CMainFrame *)AfxGetApp()->m_pMainWnd)->GetActiveDocument()->UpdateAllViews( NULL ) ;
 }
 
 
 void CControlView::OnTimer(UINT_PTR nIDEvent)
 {
-	// TODO: ÔÚ´ËÌí¼ÓÏûÏ¢´¦Àí³ÌĞò´úÂëºÍ/»òµ÷ÓÃÄ¬ÈÏÖµ
-	//×Ô¶¯Ñ­»·Ôö¼ÓÇúÏß·ù¶È
-	m_nHight ++; 
-	if (m_nHight>30)  m_nHight=10.0;
-	//ÖØĞÂ»­Í¼
+	// TODO: åœ¨æ­¤æ·»åŠ æ¶ˆæ¯å¤„ç†ç¨‹åºä»£ç å’Œ/æˆ–è°ƒç”¨é»˜è®¤å€¼
+	//è‡ªåŠ¨å¾ªç¯å¢åŠ æ›²çº¿å¹…åº¦
+	m_nHight = m_nHight + 1;
+	if (((CMCADoc*)m_pDocument)->m_Dot[0]>200){
+		mul  = mul*2;
+		for(int i =0;i<512;i++){
+			((CMCADoc*)m_pDocument)->m_Dot[i]=(((CMCADoc*)m_pDocument)->m_Dot[i])/2;
+		}
+	}
+
+		//(((CMCADoc*)m_pDocument)->m_Dot,((CMCADoc*)m_pDocument)->m_Dot+512);
+	//if (m_nHight>3)  m_nHight=1.0;
+	//é‡æ–°ç”»å›¾
 	UpdateData(FALSE);
 	OnBnClickedButtonPaint();
 
@@ -174,18 +201,18 @@ void CControlView::OnTimer(UINT_PTR nIDEvent)
 
 void CControlView::OnBnClickedCheckTimer()
 {
-	// TODO: ÔÚ´ËÌí¼Ó¿Ø¼şÍ¨Öª´¦Àí³ÌĞò´úÂë
-	UpdateData(TRUE); //»ñÈ¡µ±Ç°Ñ¡ÖĞ×´Ì¬
+	// TODO: åœ¨æ­¤æ·»åŠ æ§ä»¶é€šçŸ¥å¤„ç†ç¨‹åºä»£ç 
+	UpdateData(TRUE); //è·å–å½“å‰é€‰ä¸­çŠ¶æ€
 if (m_bCheckAuto) 
 {
 	SetTimer(1,500,NULL);
 	Invalidate( FALSE ); 
-	//Ñ¡ÖĞ£¬ÉèÖÃ×Ô¶¯¸üĞÂ 
+	//é€‰ä¸­ï¼Œè®¾ç½®è‡ªåŠ¨æ›´æ–° 
 }
 else 
 { 
 	KillTimer(1);
-	//²»Ñ¡ÖĞ£¬È¡Ïû×Ô¶¯¸üĞÂ 
+	//ä¸é€‰ä¸­ï¼Œå–æ¶ˆè‡ªåŠ¨æ›´æ–° 
 }
 
 }

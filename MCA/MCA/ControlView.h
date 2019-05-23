@@ -44,6 +44,7 @@ public:
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	BOOL m_bCheckAuto;
 	afx_msg void OnBnClickedCheckTimer();
+	int mul ;
 };
 
 
