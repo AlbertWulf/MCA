@@ -15,6 +15,9 @@
 #define IDC_CHECK1                      1005
 #define IDC_CHECK2                      1006
 #define IDC_CHECK_TIMER                 1006
+#define IDC_EDIT_DTCHID                 1009
+#define IDC_EDIT3                       1010
+#define IDC_EDIT_DTCOUNT                1010
 #define ID_32771                        32771
 #define ID_32772                        32772
 #define ID_MENU_PAINT                   32773
@@ -26,7 +29,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        312
 #define _APS_NEXT_COMMAND_VALUE         32777
-#define _APS_NEXT_CONTROL_VALUE         1009
+#define _APS_NEXT_CONTROL_VALUE         1011
 #define _APS_NEXT_SYMED_VALUE           310
 #endif
 #endif

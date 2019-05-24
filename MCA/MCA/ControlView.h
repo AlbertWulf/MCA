@@ -45,6 +45,11 @@ public:
 	BOOL m_bCheckAuto;
 	afx_msg void OnBnClickedCheckTimer();
 	int mul ;
+	CEdit m_EditChannel;
+	int m_nChannel;
+	CEdit m_EditCount;
+	int m_nCount;
+	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
 };
 
 

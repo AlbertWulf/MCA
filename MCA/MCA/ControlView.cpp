@@ -26,6 +26,8 @@ CControlView::CControlView()
 	, m_nPeriod(0)
 	, mul(1)
 	, m_bCheckAuto(FALSE)
+	, m_nChannel(0)
+	, m_nCount(0)
 {
 
 }
@@ -44,6 +46,10 @@ void CControlView::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_BUTTON_PAINT, m_ButtonPaint);
 	DDX_Control(pDX, IDC_BUTTON_CLEAR, m_ButtonClear);
 	DDX_Check(pDX, IDC_CHECK_TIMER, m_bCheckAuto);
+	DDX_Control(pDX, IDC_EDIT_DTCHID, m_EditChannel);
+	DDX_Text(pDX, IDC_EDIT_DTCHID, m_nChannel);
+	DDX_Control(pDX, IDC_EDIT_DTCOUNT, m_EditCount);
+	DDX_Text(pDX, IDC_EDIT_DTCOUNT, m_nCount);
 }
 
 BEGIN_MESSAGE_MAP(CControlView, CFormView)
@@ -56,6 +62,7 @@ BEGIN_MESSAGE_MAP(CControlView, CFormView)
 	ON_BN_CLICKED(IDC_BUTTON_CLEAR, &CControlView::OnBnClickedButtonClear)
 	ON_WM_TIMER()
 	ON_BN_CLICKED(IDC_CHECK_TIMER, &CControlView::OnBnClickedCheckTimer)
+	ON_WM_MOUSEMOVE()
 END_MESSAGE_MAP()
 
 
@@ -182,6 +189,9 @@ void CControlView::OnTimer(UINT_PTR nIDEvent)
 	// TODO: 在此添加消息处理程序代码和/或调用默认值
 	//自动循环增加曲线幅度
 	m_nHight = m_nHight + 1;
+	m_nChannel = ((CMCADoc*)m_pDocument) ->cha;
+	if(m_nChannel<512){
+		m_nCount =((CMCADoc*)m_pDocument) ->m_Dot[m_nChannel];}
 	if (((CMCADoc*)m_pDocument)->m_Dot[0]>200){
 		mul  = mul*2;
 		for(int i =0;i<512;i++){
@@ -215,4 +225,13 @@ else
 	//不选中，取消自动更新 
 }
 
+}
+
+
+void CControlView::OnMouseMove(UINT nFlags, CPoint point)
+{
+	// TODO: 在此添加消息处理程序代码和/或调用默认值
+	//m_nChannel = ((CMCADoc*)m_pDocument) ->cha;
+
+	CFormView::OnMouseMove(nFlags, point);
 }

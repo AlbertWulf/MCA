@@ -19,6 +19,9 @@ public:
 	int Data[512];
 	int lbtn_beg;
 	int lbtn_end;
+	int mouse_now;
+	int cha;
+	
 	
 
 

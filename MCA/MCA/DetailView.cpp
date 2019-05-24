@@ -38,6 +38,38 @@ void CDetailView::OnDraw(CDC* pDC)
 	CDocument* pDoc = GetDocument();
 	// TODO: 在此添加绘制代码
 }
+void CDetailView::DrawAxis(CDC &MemDC, LPTSTR TitleForX, LPTSTR TitleForY)
+{
+    //选择画坐标轴的画笔
+    CPen PenForDrawAxis(PS_SOLID, 1, RGB(255,251,13));
+    MemDC.SelectObject(PenForDrawAxis);
+ 
+    //绘制X轴
+    MemDC.MoveTo(60, 220);
+    MemDC.LineTo(520, 220);
+    //绘制箭头
+    MemDC.LineTo(510, 223);
+    MemDC.LineTo(510, 217);
+    MemDC.LineTo(520, 220);
+ 
+    //绘制Y轴
+    MemDC.MoveTo(60, 220);
+    MemDC.LineTo(60, 30);
+    //绘制箭头
+    MemDC.LineTo(57, 40);
+    MemDC.LineTo(63, 40);
+    MemDC.LineTo(60, 30);
+ 
+    //设置文本的颜色
+    COLORREF OldColor = MemDC.SetTextColor(RGB(255, 255, 0));
+ 
+    //绘制标注
+    MemDC.TextOut(480, 230, TitleForX);
+    MemDC.TextOut(40, 10, TitleForY);
+ 
+    //还原文本颜色
+    MemDC.SetTextColor(OldColor);
+}
 
 
 // CDetailView 诊断
@@ -63,32 +95,54 @@ void CDetailView::Dump(CDumpContext& dc) const
 void CDetailView::OnPaint()
 {
 	CPaintDC dc(this);
-	//画背景颜色 
 	CRect rect; 
 	GetClientRect(&rect); 
+    CDC *pDC = GetDC();
+	CDC MemDC;
+    MemDC.CreateCompatibleDC(NULL); 
+    CBitmap MemBitmap;
+    MemBitmap.CreateCompatibleBitmap(pDC, rect.Width(),rect.Height());
+	MemDC.SelectObject(&MemBitmap); 
+
+	//画背景颜色 
 	
-	dc.FillSolidRect(0,0,rect.Width(),rect.Height(),RGB(139,35,134)); //紫色背景
+	MemDC.FillSolidRect(0,0,rect.Width(),rect.Height(),RGB(85,85,85));
+	//DrawAxis(MemDC, _T("time(s)"), _T("length(kbit)"));
+
+	
+	//dc.FillSolidRect(0,0,rect.Width(),rect.Height(),RGB(85,85,85)); //紫色背景
 	
 	
 	
 	//设置曲线颜色 
 	CPen pen;
-	pen.CreatePen(PS_SOLID,2,RGB(255,0,0));
-	CPen* oldpen = dc.SelectObject(&pen);
+	
+	CPen* oldpen = MemDC.SelectObject(&pen);
 	//画曲线 
-	dc.MoveTo(1,rect.Height()-((CMCADoc*)m_pDocument)->m_Dot[0]);
+	DrawAxis(MemDC, _T("time(s)"), _T("length(kbit)"));
+	pen.CreatePen(PS_SOLID,2,RGB(255,251,13));
+	MemDC.MoveTo(1,rect.Height()-((CMCADoc*)m_pDocument)->m_Dot[0]);
 	for (int i=0;i<512;i++)
 	{ 
-		dc.LineTo(i+1,rect.Height()-((CMCADoc*)m_pDocument)->m_Dot[i]); } 
+		MemDC.LineTo(i+1,rect.Height()-((CMCADoc*)m_pDocument)->m_Dot[i]); } 
 	//释放资源 
-	dc.SelectObject(oldpen); 
+	if(((CMCADoc*)m_pDocument)->lbtn_beg<Cursor_Pos){
+		MemDC.FillSolidRect(((CMCADoc*)m_pDocument)->lbtn_beg,0,Cursor_Pos-((CMCADoc*)m_pDocument)->lbtn_beg,rect.Height(),RGB(0,255,255));}
+	pDC->BitBlt(0, 0,rect.Width(),rect.Height(), &MemDC, 0, 0, SRCCOPY); 
+
+	MemDC.SelectObject(oldpen); 
 	pen.DeleteObject();
+	ReleaseDC(pDC);
+
+	
+	
 
 }
 
 void CDetailView::OnRButtonDblClk(UINT nFlags, CPoint point)
 {
 	// TODO: 在此添加消息处理程序;代码和/或调用默认值
+	Cursor_Pos = ((CMCADoc*)m_pDocument)->lbtn_beg;
 	m_RBMouseClick = TRUE;
 	CView::OnRButtonDblClk(nFlags, point);
 }
@@ -119,7 +173,7 @@ void CDetailView::OnMouseMove(UINT nFlags, CPoint point)
 	CDC  * pDC = GetDC();
 	
 		
-		
+	((CMCADoc*)m_pDocument) ->cha = point.x;
 	
 	if (m_bMouseDown) 
 	{   
@@ -132,15 +186,15 @@ void CDetailView::OnMouseMove(UINT nFlags, CPoint point)
 		//CDC  * pDC = GetDC();
 		pDC->TextOutW(10,80,strText);
 		CPen pen;
-	pen.CreatePen(PS_SOLID,2,RGB(255,0,0));
+	pen.CreatePen(PS_SOLID,2,RGB(0,255,0));
 	CPen* oldpen = pDC->SelectObject(&pen);	   
 
 	CRect rect;
 	GetClientRect(&rect);
 	
     //pDC->SetROP2(R2_XORPEN);   //擦除
-    pDC->MoveTo(m_nSel,0);
-    pDC->LineTo(m_nSel,rect.Height());
+   // pDC->MoveTo(m_nSel,0);
+    //pDC->LineTo(m_nSel,rect.Height());
 
     pDC->MoveTo(nX,0);         //绘制光标
     pDC->LineTo(nX,rect.Height());

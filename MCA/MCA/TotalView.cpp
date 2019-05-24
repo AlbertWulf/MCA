@@ -32,7 +32,7 @@ void CTotalView::OnDraw(CDC* pDC)
 	CDocument* pDoc = GetDocument();
 	// TODO: 在此添加绘制代码
 }
-
+ 
 
 // CTotalView 诊断
 
@@ -71,7 +71,8 @@ void CTotalView::OnPaint()
 	pen.CreatePen(PS_SOLID,2,RGB(255,0,0));
 	CPen* oldpen = dc.SelectObject(&pen);
 	//画曲线 
-	int gap = (int) 512/(((CMCADoc*)m_pDocument)->lbtn_end-((CMCADoc*)m_pDocument)->lbtn_beg);
+
+	int gap = (int) 512/(((CMCADoc*)m_pDocument)->lbtn_end-((CMCADoc*)m_pDocument)->lbtn_beg+1);
 	dc.MoveTo(0,rect.Height()-((CMCADoc*)m_pDocument)->m_Dot[((CMCADoc*)m_pDocument)->lbtn_beg]);
 	int bg = 0;
 	for (int i=((CMCADoc*)m_pDocument)->lbtn_beg;i<((CMCADoc*)m_pDocument)->lbtn_end+2 ;i++)

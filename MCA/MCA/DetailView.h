@@ -33,6 +33,7 @@ public:
 	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
 	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
 	afx_msg void OnRButtonDblClk(UINT nflags,CPoint point);
+	afx_msg void DrawAxis(CDC &MemDC, LPTSTR TitleForX, LPTSTR TitleForY);
 };
 
 
