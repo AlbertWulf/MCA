@@ -14,6 +14,7 @@
 #include <fstream>
 #include <time.h>
 #include <algorithm>
+#include "DetailView.h"
 
 
 // CControlView
@@ -26,8 +27,9 @@ CControlView::CControlView()
 	, m_nPeriod(0)
 	, mul(1)
 	, m_bCheckAuto(FALSE)
-	, m_nChannel(0)
-	, m_nCount(0)
+	, m_bwillpaint(FALSE)
+
+	, m_nDetailSum(0)
 {
 
 }
@@ -46,10 +48,12 @@ void CControlView::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_BUTTON_PAINT, m_ButtonPaint);
 	DDX_Control(pDX, IDC_BUTTON_CLEAR, m_ButtonClear);
 	DDX_Check(pDX, IDC_CHECK_TIMER, m_bCheckAuto);
-	DDX_Control(pDX, IDC_EDIT_DTCHID, m_EditChannel);
-	DDX_Text(pDX, IDC_EDIT_DTCHID, m_nChannel);
-	DDX_Control(pDX, IDC_EDIT_DTCOUNT, m_EditCount);
-	DDX_Text(pDX, IDC_EDIT_DTCOUNT, m_nCount);
+	DDX_Control(pDX, IDC_EDIT_DTCHID, ((CMCADoc*)m_pDocument)->m_EditChannel);
+	DDX_Text(pDX, IDC_EDIT_DTCHID, ((CMCADoc*)m_pDocument)->m_nChannel);
+	DDX_Control(pDX, IDC_EDIT_DTCOUNT, ((CMCADoc*)m_pDocument)->m_EditCount);
+	DDX_Text(pDX, IDC_EDIT_DTCOUNT, ((CMCADoc*)m_pDocument)->m_nCount);
+	DDX_Control(pDX, IDC_EDIT_DETAILSUM, m_EditDetailSum);
+	DDX_Text(pDX, IDC_EDIT_DETAILSUM, m_nDetailSum);
 }
 
 BEGIN_MESSAGE_MAP(CControlView, CFormView)
@@ -117,7 +121,7 @@ void CControlView::OnInitialUpdate()
 	m_nHight = 1.0;
 	m_nPeriod = 0.1;
 	UpdateData(FALSE);
-	m_ButtonClear.EnableWindow(FALSE);
+	m_ButtonClear.EnableWindow(TRUE);
 	FILE*f=fopen("D:\\mydevelopdata\\VSCODE\\MCA\\sldata.txt","r");
 	for(int i = 0;i<512;i++){
 		fscanf(f,"%d",&((CMCADoc*)m_pDocument)->Data[i]);
@@ -127,12 +131,11 @@ void CControlView::OnInitialUpdate()
 }
 
 
-void CControlView::OnBnClickedButtonPaint()
+void CControlView::PAINTNEW()
 {
-	
 	UpdateData(TRUE);//获取屏幕值至变量
 	//设置按钮状态
-	m_ButtonPaint.EnableWindow(FALSE);
+	m_ButtonPaint.EnableWindow(TRUE);
 	m_ButtonClear.EnableWindow(TRUE);
 	//设置曲线值
 	
@@ -148,6 +151,44 @@ void CControlView::OnBnClickedButtonPaint()
 	} 
 	((CMCADoc*)GetDocument())->UpdateAllViews(NULL); //重画曲线
 
+}
+void CControlView::OnBnClickedButtonPaint()
+{
+	
+	
+	((CMCADoc*)GetDocument())->UpdateAllViews(NULL); //重画曲线
+	m_bwillpaint = !m_bwillpaint;
+	UpdateData(TRUE); //获取当前选中状态
+	CDetailView*OnPaint();
+if (m_bwillpaint) 
+{
+	SetTimer(1,500,NULL);
+	Invalidate( FALSE ); 
+	//选中，设置自动更新 
+}
+else 
+{ 
+	KillTimer(1);
+	//不选中，取消自动更新 
+}
+	//UpdateData(TRUE);//获取屏幕值至变量
+	//设置按钮状态
+	//m_ButtonPaint.EnableWindow(FALSE);
+	//m_ButtonClear.EnableWindow(TRUE);
+	//设置曲线值
+	
+	
+	//for (int i=0;i<512;i++) 
+		
+	//{ 
+		//srand(time(NULL));
+		//((CMCADoc*)m_pDocument)->m_Dot[i]=m_nHight*(1+cos(m_nPeriod*i));
+		
+		//((CMCADoc*)m_pDocument)->m_Dot[i] = ((CMCADoc*)m_pDocument)->m_Dot[i]+0.2*((CMCADoc*)m_pDocument)->Data[i]+rand()%3;		
+		//((CMCADoc*)m_pDocument)->Data[i]=1.02*(((CMCADoc*)m_pDocument)->Data[i])+1;
+	//} 
+	//((CMCADoc*)GetDocument())->UpdateAllViews(NULL); //重画曲线
+
 
 
 	// TODO: 在此添加控件通知处理程序代码
@@ -157,7 +198,8 @@ void CControlView::OnBnClickedButtonPaint()
 void CControlView::OnMenuPaint()
 {
 	// TODO: 在此添加命令处理程序代码
-	OnBnClickedButtonPaint();
+	PAINTNEW();
+	//OnBnClickedButtonPaint();
 }
 
 
@@ -189,9 +231,9 @@ void CControlView::OnTimer(UINT_PTR nIDEvent)
 	// TODO: 在此添加消息处理程序代码和/或调用默认值
 	//自动循环增加曲线幅度
 	m_nHight = m_nHight + 1;
-	m_nChannel = ((CMCADoc*)m_pDocument) ->cha;
-	if(m_nChannel<512){
-		m_nCount =((CMCADoc*)m_pDocument) ->m_Dot[m_nChannel];}
+//((CMCADoc*)m_pDocument)->m_nChannel = ((CMCADoc*)m_pDocument) ->cha;
+	//if(((CMCADoc*)m_pDocument)->m_nChannel<512){
+		//((CMCADoc*)m_pDocument)->m_nCount =((CMCADoc*)m_pDocument) ->m_Dot[((CMCADoc*)m_pDocument)->m_nChannel];}
 	if (((CMCADoc*)m_pDocument)->m_Dot[0]>200){
 		mul  = mul*2;
 		for(int i =0;i<512;i++){
@@ -203,8 +245,8 @@ void CControlView::OnTimer(UINT_PTR nIDEvent)
 	//if (m_nHight>3)  m_nHight=1.0;
 	//重新画图
 	UpdateData(FALSE);
-	OnBnClickedButtonPaint();
-
+	//OnBnClickedButtonPaint();
+	PAINTNEW();
 	CFormView::OnTimer(nIDEvent);
 }
 

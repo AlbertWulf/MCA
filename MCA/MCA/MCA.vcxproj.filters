@@ -48,6 +48,9 @@
     <ClInclude Include="DetailView.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="SkinMagicLib.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MCA.cpp">
@@ -84,6 +87,9 @@
     <None Include="res\MCA.rc2">
       <Filter>资源文件</Filter>
     </None>
+    <None Include="corona.smf">
+      <Filter>资源文件</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\MCADoc.ico">
@@ -96,6 +102,9 @@
       <Filter>资源文件</Filter>
     </Image>
     <Image Include="res\ico_condition.png">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="res\sunsit.bmp">
       <Filter>资源文件</Filter>
     </Image>
   </ItemGroup>

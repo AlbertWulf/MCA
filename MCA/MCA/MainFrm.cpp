@@ -9,6 +9,8 @@
 #include "TotalView.h"
 #include "DetailView.h"
 
+//#pragma comment(lib,"SkinMagic.lib")//µ÷ÓÃÆ¤·ôlib  
+//#include "SkinMagicLib.h" 
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif

@@ -20,7 +20,13 @@ public:
 	int lbtn_beg;
 	int lbtn_end;
 	int mouse_now;
+	int m_nChannel;
+	int m_nCount;
 	int cha;
+	int gap;
+	CEdit m_EditChannel;
+	//int m_nChannel;
+	CEdit m_EditCount;
 	
 	
 

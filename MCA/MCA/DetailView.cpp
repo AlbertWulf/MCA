@@ -5,9 +5,8 @@
 #include "MCA.h"
 #include "DetailView.h"
 #include "MCADOc.h"
-
-
-// CDetailView
+#include "MainFrm.h"
+#include "TotalView.h"
 
 IMPLEMENT_DYNCREATE(CDetailView, CView)
 
@@ -119,15 +118,16 @@ void CDetailView::OnPaint()
 	
 	CPen* oldpen = MemDC.SelectObject(&pen);
 	//画曲线 
-	DrawAxis(MemDC, _T("time(s)"), _T("length(kbit)"));
+	//DrawAxis(MemDC, _T("time(s)"), _T("length(kbit)"));
 	pen.CreatePen(PS_SOLID,2,RGB(255,251,13));
 	MemDC.MoveTo(1,rect.Height()-((CMCADoc*)m_pDocument)->m_Dot[0]);
+	if(((CMCADoc*)m_pDocument)->lbtn_beg<Cursor_Pos){
+		MemDC.FillSolidRect(((CMCADoc*)m_pDocument)->lbtn_beg,0,Cursor_Pos-((CMCADoc*)m_pDocument)->lbtn_beg,rect.Height(),RGB(0,255,255));}
 	for (int i=0;i<512;i++)
 	{ 
 		MemDC.LineTo(i+1,rect.Height()-((CMCADoc*)m_pDocument)->m_Dot[i]); } 
 	//释放资源 
-	if(((CMCADoc*)m_pDocument)->lbtn_beg<Cursor_Pos){
-		MemDC.FillSolidRect(((CMCADoc*)m_pDocument)->lbtn_beg,0,Cursor_Pos-((CMCADoc*)m_pDocument)->lbtn_beg,rect.Height(),RGB(0,255,255));}
+	
 	pDC->BitBlt(0, 0,rect.Width(),rect.Height(), &MemDC, 0, 0, SRCCOPY); 
 
 	MemDC.SelectObject(oldpen); 
@@ -144,6 +144,7 @@ void CDetailView::OnRButtonDblClk(UINT nFlags, CPoint point)
 	// TODO: 在此添加消息处理程序;代码和/或调用默认值
 	Cursor_Pos = ((CMCADoc*)m_pDocument)->lbtn_beg;
 	m_RBMouseClick = TRUE;
+	((CMCADoc*)GetDocument())->UpdateAllViews(NULL);
 	CView::OnRButtonDblClk(nFlags, point);
 }
 
@@ -152,7 +153,12 @@ void CDetailView::OnLButtonDown(UINT nFlags, CPoint point)
 	// TODO: 在此添加消息处理程序代码和/或调用默认值
 	
 	((CMCADoc*)m_pDocument) ->lbtn_beg = point.x;
-	m_bMouseDown = TRUE;
+	m_bMouseDown = FALSE;
+	//
+	//((CMCADoc*)m_pDocument)->m_nChannel = point.x;
+	UpdateData(FALSE);
+	
+	//((CMCADoc*)m_pDocument)->m_EditChannel.UpdateData(TRUE);
 	CView::OnLButtonDown(nFlags, point);
 }
 
@@ -162,20 +168,28 @@ void CDetailView::OnLButtonUp(UINT nFlags, CPoint point)
 	// TODO: 在此添加消息处理程序代码和/或调用默认值
 	((CMCADoc*)m_pDocument) ->lbtn_end = point.x;
 	
-	m_bMouseDown = FALSE;
+	m_bMouseDown = TRUE;
+	if(((CMCADoc*)m_pDocument) ->lbtn_end-((CMCADoc*)m_pDocument)->lbtn_beg>5)
+	{
+        //CTotalView*OnPaint();
+		((CMCADoc*)GetDocument())->UpdateAllViews(NULL); //重画曲线
+	}
 	CView::OnLButtonUp(nFlags, point);
 }
 
+////
 
+
+///
 void CDetailView::OnMouseMove(UINT nFlags, CPoint point)
 {
 	// TODO: 在此添加消息处理程序代码和/或调用默认值
 	CDC  * pDC = GetDC();
 	
 		
-	((CMCADoc*)m_pDocument) ->cha = point.x;
+	//((CMCADoc*)m_pDocument) ->cha = point.x;
 	
-	if (m_bMouseDown) 
+	if (m_bMouseDown==0) 
 	{   
 		sumroi++;
 		Cursor_Pos = point.x;

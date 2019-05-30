@@ -108,6 +108,7 @@
     <ClInclude Include="MCADoc.h" />
     <ClInclude Include="MCAView.h" />
     <ClInclude Include="Resource.h" />
+    <ClInclude Include="SkinMagicLib.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="TotalView.h" />
@@ -129,12 +130,14 @@
     <ResourceCompile Include="MCA.rc" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="corona.smf" />
     <None Include="res\MCA.rc2" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\ico_condition.png" />
     <Image Include="res\MCA.ico" />
     <Image Include="res\MCADoc.ico" />
+    <Image Include="res\sunsit.bmp" />
     <Image Include="res\Toolbar.bmp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

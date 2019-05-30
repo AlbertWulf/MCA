@@ -43,13 +43,15 @@ public:
 	afx_msg void OnBnClickedButtonClear();
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	BOOL m_bCheckAuto;
+	BOOL m_bwillpaint;
 	afx_msg void OnBnClickedCheckTimer();
 	int mul ;
-	CEdit m_EditChannel;
-	int m_nChannel;
-	CEdit m_EditCount;
-	int m_nCount;
+	
+	//int m_nCount;
 	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
+	afx_msg void PAINTNEW();
+	CEdit m_EditDetailSum;
+	int m_nDetailSum;
 };
 
 
