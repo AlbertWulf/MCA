@@ -101,6 +101,7 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ChannelView.h" />
     <ClInclude Include="ControlView.h" />
     <ClInclude Include="DetailView.h" />
     <ClInclude Include="MainFrm.h" />
@@ -114,6 +115,7 @@
     <ClInclude Include="TotalView.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ChannelView.cpp" />
     <ClCompile Include="ControlView.cpp" />
     <ClCompile Include="DetailView.cpp" />
     <ClCompile Include="MainFrm.cpp" />

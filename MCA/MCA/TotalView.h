@@ -30,6 +30,7 @@ public:
 	afx_msg void DrawLine(int x);
 	int pointx;
 	
+	afx_msg void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
 };
 
 

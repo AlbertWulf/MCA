@@ -8,7 +8,7 @@
 #include "Controlview.h"
 #include "TotalView.h"
 #include "DetailView.h"
-
+#include "ChannelView.h"
 //#pragma comment(lib,"SkinMagic.lib")//调用皮肤lib  
 //#include "SkinMagicLib.h" 
 #ifdef _DEBUG
@@ -77,17 +77,35 @@ BOOL CMainFrame::OnCreateClient(LPCREATESTRUCT /*lpcs*/,
 		2,WS_CHILD|WS_VISIBLE, AFX_IDW_PANE_FIRST));
 	//创建左窗口视图 
 	VERIFY(m_wndSplitter.CreateView(0,0,
-		RUNTIME_CLASS(CControlView), CSize(165, 0), pContext));         
+		RUNTIME_CLASS(CControlView), CSize(165, 500), pContext));         
 	//创建右边上下拆分窗口
-	VERIFY(m_wndSplitter2.CreateStatic(&m_wndSplitter, 2,
+	VERIFY(m_wndSplitter2.CreateStatic(&m_wndSplitter, 3,
 		1,WS_CHILD | WS_VISIBLE,
 		m_wndSplitter.IdFromRowCol(0,1))); 
 	//创建右下窗口视图 
 	VERIFY(m_wndSplitter2.CreateView(0, 0,
-	RUNTIME_CLASS(CTotalView), CSize( 0, 120), pContext)); 
+	RUNTIME_CLASS(CTotalView), CSize( 1024, 250), pContext)); 
+	//
+	VERIFY(m_wndSplitter2.CreateView(2, 0, 
+	RUNTIME_CLASS(CChannelView), CSize( 1024, 20), pContext));
 	//创建右上窗口视图 
 	VERIFY(m_wndSplitter2.CreateView(1, 0, 
-	RUNTIME_CLASS(CDetailView), CSize( 0, 0), pContext));
+	RUNTIME_CLASS(CDetailView), CSize( 1024, 250), pContext));
+	//
+	CRect r;
+    GetClientRect(&r);
+    m_wndSplitter.SetColumnInfo( 0, r.Width()/6, 0 );
+    //m_wndSplitter.SetColumnInfo( 0, r.Width()/6, 1 );
+    m_wndSplitter.RecalcLayout();
+	m_wndSplitter2.SetRowInfo( 0, r.Height()/2.4, 0);
+	m_wndSplitter2.SetColumnInfo( 0, r.Width()/1.17, 0);
+
+	//m_wndSplitter2.SetRowInfo( 0, r.Width()/2, 0 );
+	m_wndSplitter2.SetRowInfo( 1, r.Height()/2.4, 0);
+	m_wndSplitter2.SetRowInfo( 2, r.Height()/6, 0);
+
+    m_wndSplitter2.RecalcLayout();
+	//
 	return TRUE;
 	//return m_wndSplitter.Create(this,
 	//	2, 2,               // TODO: 调整行数和列数
@@ -97,13 +115,21 @@ BOOL CMainFrame::OnCreateClient(LPCREATESTRUCT /*lpcs*/,
 
 BOOL CMainFrame::PreCreateWindow(CREATESTRUCT& cs)
 {
+	
+	
 	if( !CFrameWnd::PreCreateWindow(cs) )
 		return FALSE;
 	// TODO: 在此处通过修改
+	
 	//  CREATESTRUCT cs 来修改窗口类或样式
-
+	cs.cx = 1300;
+	cs.cy = 700;
+	cs.style = cs.style & (~WS_THICKFRAME);
+	cs.style = cs.style & (~WS_SIZEBOX);
+	
 	return TRUE;
 }
+
 
 // CMainFrame 诊断
 

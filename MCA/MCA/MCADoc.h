@@ -14,9 +14,9 @@ protected: // 仅从序列化创建
 
 // 特性
 public:
-	int m_Dot[512];
+	int m_Dot[1024];
 	int num_channel ;
-	int Data[512];
+	int Data[1024];
 	int lbtn_beg;
 	int lbtn_end;
 	int mouse_now;
@@ -27,7 +27,7 @@ public:
 	int gap;
 	int total_mouse_pos;
 	int mult;//记录因为超出量程导致的计数减半
-	
+	int total_channel;
 	CEdit m_EditChannel;
 	//int m_nChannel;
 	CEdit m_EditCount;

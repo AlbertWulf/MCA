@@ -29,13 +29,13 @@ END_MESSAGE_MAP()
 
 CMCADoc::CMCADoc()
 {
-	for(int i=0;i<512;i++) 
+	for(int i=0;i<1024;i++) 
 	{ 
 		m_Dot[i]=0;
 		Data[i]=0;
 	}
 	mult = 1;
-	
+	total_channel = 1024;
 	// TODO: 在此添加一次性构造代码
 
 }

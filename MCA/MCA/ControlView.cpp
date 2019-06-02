@@ -13,11 +13,11 @@
 #include "MainFrm.h"
 #include <fstream>
 #include <time.h>
-#include <algorithm>
+
 #include "DetailView.h"
 #include "TotalView.h"
 #include<windows.h>
-
+#include <algorithm>
 // CControlView
 
 IMPLEMENT_DYNCREATE(CControlView, CFormView)
@@ -30,7 +30,7 @@ CControlView::CControlView()
 	, m_bCheckAuto(FALSE)
 	, m_bwillpaint(FALSE)
 	,runtime(0)
-	,m_nprecount(10000)
+	,m_nprecount(1000000)
 	,m_npretime(100)
 	,pre_count(10000)
 	,pre_time(100)
@@ -150,8 +150,8 @@ void CControlView::OnInitialUpdate()
 	m_nPeriod = 0.1;
 	UpdateData(FALSE);
 	m_ButtonClear.EnableWindow(TRUE);
-	FILE*f=fopen("D:\\mydevelopdata\\VSCODE\\MCA\\sldata.txt","r");
-	for(int i = 0;i<512;i++){
+	FILE*f=fopen("D:\\mydevelopdata\\VSCODE\\MCA\\Cs137.txt","r");
+	for(int i = 0;i<1024;i++){
 		fscanf(f,"%d",&((CMCADoc*)m_pDocument)->Data[i]);
 	}
 
@@ -171,13 +171,13 @@ void CControlView::PAINTNEW()
 	
 	//
 	
-	for (int i=0;i<512;i++) 
+	for (int i=0;i<1024;i++) 
 		
 	{ 
 		//srand(time(NULL));
 		//((CMCADoc*)m_pDocument)->m_Dot[i]=m_nHight*(1+cos(m_nPeriod*i));
 		
-		((CMCADoc*)m_pDocument)->m_Dot[i] = ((CMCADoc*)m_pDocument)->m_Dot[i]+0.02*((CMCADoc*)m_pDocument)->Data[i]+rand()%3;		
+		((CMCADoc*)m_pDocument)->m_Dot[i] = ((CMCADoc*)m_pDocument)->m_Dot[i]+0.001*((CMCADoc*)m_pDocument)->Data[i]+rand()%3;		
 		//((CMCADoc*)m_pDocument)->Data[i]=1.02*(((CMCADoc*)m_pDocument)->Data[i])+1;
 	} 
 	((CMCADoc*)GetDocument())->UpdateAllViews(this); //重画曲线
@@ -187,6 +187,8 @@ void CControlView::OnBnClickedButtonPaint()
 {
 	
 	
+
+
 	((CMCADoc*)GetDocument())->UpdateAllViews(this); //重画曲线
 	m_bwillpaint = !m_bwillpaint;
 	UpdateData(TRUE); //获取当前选中状态
@@ -200,7 +202,7 @@ void CControlView::OnBnClickedButtonPaint()
 	
 	if (m_bwillpaint) 
 {
-	SetTimer(1,500,NULL);
+	SetTimer(1,1000,NULL);
 	Invalidate( FALSE ); 
 	//选中，设置自动更新 
 }
@@ -255,9 +257,16 @@ void CControlView::OnBnClickedButtonClear()
 	// TODO: 在此添加控件通知处理程序代码
 		 //设置按钮状态
     m_ButtonPaint.EnableWindow(TRUE);
-    m_ButtonClear.EnableWindow(FALSE);
+    m_ButtonClear.EnableWindow(TRUE);
      //设置曲线值
-      for (int i=0;i<512;i++)  
+	UpdateData(FALSE);
+	CString have_run;
+	m_nHight = 0;
+	have_run.Format(_T("%d"),m_nHight);
+	//str_Counts.Format(_T("%d"),channel);
+	m_EditHight.SetWindowText(have_run);
+	
+      for (int i=0;i<1024;i++)  
       {
          ((CMCADoc*)m_pDocument)->m_Dot[i]=0;
         }
@@ -272,7 +281,7 @@ void CControlView::OnTimer(UINT_PTR nIDEvent)
 	//自动循环增加曲线幅度
 	
 	int temp_sum = 0;
-	for(int k=0;k<512;k++){
+	for(int k=0;k<1024;k++){
 		temp_sum = temp_sum + ((CMCADoc*)m_pDocument)->m_Dot[k]*((CMCADoc*)m_pDocument)->mult;
 	}
 	if(pre_count<temp_sum){
@@ -295,10 +304,13 @@ void CControlView::OnTimer(UINT_PTR nIDEvent)
 //((CMCADoc*)m_pDocument)->m_nChannel = ((CMCADoc*)m_pDocument) ->cha;
 	//if(((CMCADoc*)m_pDocument)->m_nChannel<512){
 		//((CMCADoc*)m_pDocument)->m_nCount =((CMCADoc*)m_pDocument) ->m_Dot[((CMCADoc*)m_pDocument)->m_nChannel];}
-	if (((CMCADoc*)m_pDocument)->m_Dot[0]>200){
+	//int max;
+	//max = *max_element(((CMCADoc*)m_pDocument)->m_Dot,((CMCADoc*)m_pDocument)->m_Dot+1024);
+	
+	if (((CMCADoc*)m_pDocument)->m_Dot[24]>250){
 		((CMCADoc*)m_pDocument)->mult = ((CMCADoc*)m_pDocument)->mult*2;
 		mul  = mul*2;
-		for(int i =0;i<512;i++){
+		for(int i =0;i<1024;i++){
 			((CMCADoc*)m_pDocument)->m_Dot[i]=(((CMCADoc*)m_pDocument)->m_Dot[i])/2;
 		}
 	}
@@ -313,10 +325,10 @@ void CControlView::OnTimer(UINT_PTR nIDEvent)
 	
 	UpdateData(FALSE);
 	int gap = ((CMCADoc*)m_pDocument)->lbtn_end-((CMCADoc*)m_pDocument)->lbtn_beg;
-	int chan = (int) ((CMCADoc*)m_pDocument)->lbtn_beg+((CMCADoc*)m_pDocument)->total_mouse_pos*gap/512;
+	int chan = (int) ((CMCADoc*)m_pDocument)->lbtn_beg+((CMCADoc*)m_pDocument)->total_mouse_pos*gap/1024;
 	CString str_Counts,str_sum;
 	int channel;
-	channel = (int) chan %512;
+	channel = (int) chan %1024;
 	//((CMCADoc*)m_pDocument)->m_nCount = ((CMCADoc*)m_pDocument)->m_Dot[chan];
 	str_Counts.Format(_T("%d"),((CMCADoc*)m_pDocument)->mult*((CMCADoc*)m_pDocument)->m_Dot[channel]);
 	//str_Counts.Format(_T("%d"),channel);
@@ -325,7 +337,7 @@ void CControlView::OnTimer(UINT_PTR nIDEvent)
 	//
 	int detail_sum=0;
 	for(int i = ((CMCADoc*)m_pDocument)->lbtn_beg;i<=((CMCADoc*)m_pDocument)->lbtn_end;i++)
-	{   int k = i%512;
+	{   int k = i%1024;
 		detail_sum = detail_sum + ((CMCADoc*)m_pDocument)->m_Dot[k];
 	}
 	detail_sum  = detail_sum *((CMCADoc*)m_pDocument)->mult;
@@ -345,7 +357,7 @@ void CControlView::OnBnClickedCheckTimer()
 	UpdateData(TRUE); //获取当前选中状态
 if (m_bCheckAuto) 
 {
-	SetTimer(1,500,NULL);
+	SetTimer(1,1000,NULL);
 	Invalidate( FALSE ); 
 	//选中，设置自动更新 
 }
@@ -420,7 +432,7 @@ void CControlView::OnBnClickedButtonExport2txt()
 	{
 		CStdioFile export_file;
 		export_file.Open(filePath,CFile::modeCreate | CFile::modeWrite | CFile::typeText);
-		for (int i = 0; i < 512; i++)
+		for (int i = 0; i < 1024; i++)
 		{
 			CString datai;
 			datai.Format(_T("%d    "),((CMCADoc*)m_pDocument)->mult*((CMCADoc*)m_pDocument)->m_Dot[i]);
@@ -458,7 +470,7 @@ void CControlView::OnBnClickedButtonImporttxt()
 	USES_CONVERSION;
 	char * pFileName = T2A(filePath);
 	FILE*f=fopen(pFileName,"r");
-	for(int i = 0;i<512;i++){
+	for(int i = 0;i<1024;i++){
 		fscanf(f,"%d",&((CMCADoc*)m_pDocument)->Data[i]);
 	}
 

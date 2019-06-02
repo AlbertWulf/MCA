@@ -120,10 +120,20 @@ void CDetailView::OnPaint()
 	//画曲线 
 	//DrawAxis(MemDC, _T("time(s)"), _T("length(kbit)"));
 	pen.CreatePen(PS_SOLID,2,RGB(255,251,13));
-	MemDC.MoveTo(1,rect.Height()-((CMCADoc*)m_pDocument)->m_Dot[0]);
+	MemDC.SelectObject(pen);
+	MemDC.MoveTo(((CMCADoc*)m_pDocument)->lbtn_beg,rect.Height());
 	if(((CMCADoc*)m_pDocument)->lbtn_beg<Cursor_Pos){
-		MemDC.FillSolidRect(((CMCADoc*)m_pDocument)->lbtn_beg,0,Cursor_Pos-((CMCADoc*)m_pDocument)->lbtn_beg,rect.Height(),RGB(0,255,255));}
-	for (int i=0;i<512;i++)
+
+		for(int i = ((CMCADoc*)m_pDocument)->lbtn_beg;i<Cursor_Pos;i++)
+		{
+			MemDC.MoveTo(i,rect.Height());
+			MemDC.LineTo(i,rect.Height()-((CMCADoc*)m_pDocument)->m_Dot[i]);
+		}
+
+		//MemDC.FillSolidRect(((CMCADoc*)m_pDocument)->lbtn_beg,0,Cursor_Pos-((CMCADoc*)m_pDocument)->lbtn_beg,rect.Height(),RGB(0,255,255));
+	}
+	MemDC.MoveTo(1,rect.Height()-((CMCADoc*)m_pDocument)->m_Dot[0]);
+	for (int i=0;i<1024;i++)
 	{ 
 		MemDC.LineTo(i+1,rect.Height()-((CMCADoc*)m_pDocument)->m_Dot[i]); } 
 	//释放资源 
@@ -172,6 +182,7 @@ void CDetailView::OnLButtonUp(UINT nFlags, CPoint point)
 	if(((CMCADoc*)m_pDocument) ->lbtn_end-((CMCADoc*)m_pDocument)->lbtn_beg>5)
 	{
         //CTotalView*OnPaint();
+		//Invalidate(TRUE);
 		((CMCADoc*)GetDocument())->UpdateAllViews(NULL); //重画曲线
 	}
 	CView::OnLButtonUp(nFlags, point);
@@ -184,10 +195,18 @@ void CDetailView::OnLButtonUp(UINT nFlags, CPoint point)
 void CDetailView::OnMouseMove(UINT nFlags, CPoint point)
 {
 	// TODO: 在此添加消息处理程序代码和/或调用默认值
-	CDC  * pDC = GetDC();
+	//CDC  * pDC = GetDC();
 	
 		
 	//((CMCADoc*)m_pDocument) ->cha = point.x;
+	
+    CDC *pDC = GetDC();
+	
+
+	//画背景颜色 
+	
+	//MemDC.FillSolidRect(0,0,rect.Width(),rect.Height(),RGB(85,85,85));
+	//
 	
 	if (m_bMouseDown==0) 
 	{   
@@ -200,22 +219,19 @@ void CDetailView::OnMouseMove(UINT nFlags, CPoint point)
 		//CDC  * pDC = GetDC();
 		pDC->TextOutW(10,80,strText);
 		CPen pen;
-	pen.CreatePen(PS_SOLID,2,RGB(0,255,0));
-	CPen* oldpen = pDC->SelectObject(&pen);	   
+        pen.CreatePen(PS_SOLID,2,RGB(255,251,13));
+	    CPen* oldpen = pDC->SelectObject(&pen);	   
 
-	CRect rect;
-	GetClientRect(&rect);
+	    CRect rect;
+	    GetClientRect(&rect);
 	
-    //pDC->SetROP2(R2_XORPEN);   //擦除
-   // pDC->MoveTo(m_nSel,0);
-    //pDC->LineTo(m_nSel,rect.Height());
+   
+		pDC->MoveTo(nX,rect.Height());         //绘制光标
+        pDC->LineTo(nX,rect.Height()-((CMCADoc*)m_pDocument)->m_Dot[nX]);
 
-    pDC->MoveTo(nX,0);         //绘制光标
-    pDC->LineTo(nX,rect.Height());
-
-    m_nSel = nX;
-	pDC->SelectObject(oldpen);
-	pen.DeleteObject();
+    //m_nSel = nX;
+	//pDC->SelectObject(oldpen);
+	//pen.DeleteObject();
 	}
 	
 		 
