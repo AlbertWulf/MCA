@@ -65,6 +65,7 @@ void CTotalView::OnPaint()
 	GetClientRect(&rect); 
 	
 	dc.FillSolidRect(0,0,rect.Width(),rect.Height(),RGB(255,121,100)); //紫色背景
+	dc.FillSolidRect(pointx,0,2,rect.Height(),RGB(255,209,71)); //紫色背景
 	
 	
 	
@@ -91,29 +92,51 @@ void CTotalView::OnPaint()
 }
 
 
+void CTotalView::DrawLine(int x){
+	CPaintDC dc(this);
+	//画背景颜色 
+	CRect rect; 
+	GetClientRect(&rect); 
+	
+	dc.FillSolidRect(x,0,2,rect.Height(),RGB(255,121,100)); //紫色背景
+	
+	
+}
+
 
 void CTotalView::OnLButtonDown(UINT nFlags, CPoint point)
 {
 	// TODO: 在此添加消息处理程序代码和/或调用默认值
 	//((CMCADoc*)m_pDocument)->m_nChannel = point.x;
+	pointx = point.x;
+	OnPaint();
 	UpdateData(FALSE);
+	
+	
 	int gap = ((CMCADoc*)m_pDocument)->lbtn_end-((CMCADoc*)m_pDocument)->lbtn_beg;
 	CString str_Channel,str_Counts,str_detail_sum;
 	int chan = ((CMCADoc*)m_pDocument)->lbtn_beg+point.x*gap/512;
+	((CMCADoc*)m_pDocument)->total_mouse_pos = point.x;
 	int detail_sum=0;//放大区总计数
 	for(int i = ((CMCADoc*)m_pDocument)->lbtn_beg;i<=((CMCADoc*)m_pDocument)->lbtn_end;i++)
 	{
 		detail_sum = detail_sum + ((CMCADoc*)m_pDocument)->m_Dot[i];
 	}
+	detail_sum = detail_sum*((CMCADoc*)m_pDocument)->mult;
 	((CMCADoc*)m_pDocument)->m_nChannel = chan;
 	((CMCADoc*)m_pDocument)->m_nCount = ((CMCADoc*)m_pDocument)->m_Dot[chan];
+	((CMCADoc*)m_pDocument)->m_nDetailSum = detail_sum;
 	str_Channel.Format(_T("%d"),chan);
-	str_Counts.Format(_T("%d"),((CMCADoc*)m_pDocument)->m_Dot[chan]);
+	str_Counts.Format(_T("%d"),((CMCADoc*)m_pDocument)->mult*((CMCADoc*)m_pDocument)->m_Dot[chan]);
+	str_detail_sum.Format(_T("%d"),detail_sum);
 	((CMCADoc*)m_pDocument)->m_EditChannel.SetWindowText(str_Channel);
 	((CMCADoc*)m_pDocument)->m_EditCount.SetWindowText(str_Counts);
-    //((CMCADoc*)m_pDocument)->m_nCount = ((CMCADoc*)m_pDocument)->m_Dot[chan];
-	//((CMCADoc*)GetDocument())->UpdateAllViews(NULL); //重画曲线
-	//((CMainFrame *)AfxGetApp()->m_pMainWnd)->GetActiveDocument()->UpdateAllViews( NULL ) ;
-	((CMCADoc*)m_pDocument)->m_EditChannel.UpdateData(TRUE);
+	((CMCADoc*)m_pDocument)->m_EditDetailSum.SetWindowText(str_detail_sum);
+    ((CMCADoc*)m_pDocument)->m_nCount = ((CMCADoc*)m_pDocument)->m_Dot[chan];
+	
+	//((CMCADoc*)GetDocument())->UpdateAllViews(this); //重画曲线
+	((CMainFrame *)AfxGetApp()->m_pMainWnd)->GetActiveDocument()->UpdateAllViews( NULL ) ;
+	//((CMCADoc*)m_pDocument)->m_EditChannel.UpdateData(TRUE);
+	
 	CView::OnLButtonDown(nFlags, point);
 }

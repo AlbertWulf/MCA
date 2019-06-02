@@ -18,8 +18,12 @@
 #define IDC_CHECK_TIMER                 1006
 #define IDC_EDIT_DTCHID                 1009
 #define IDC_EDIT_DTCOUNT                1010
-#define IDC_EDIT2                       1011
 #define IDC_EDIT_DETAILSUM              1011
+#define IDC_EDIT_PRECOUNT               1012
+#define IDC_EDIT_PRETIME                1013
+#define IDC_BUTTON_EXPORT2TXT           1014
+#define IDC_BUTTON1                     1015
+#define IDC_BUTTON_IMPORTTXT            1015
 #define ID_32771                        32771
 #define ID_32772                        32772
 #define ID_MENU_PAINT                   32773
@@ -31,7 +35,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        313
 #define _APS_NEXT_COMMAND_VALUE         32777
-#define _APS_NEXT_CONTROL_VALUE         1012
+#define _APS_NEXT_CONTROL_VALUE         1016
 #define _APS_NEXT_SYMED_VALUE           310
 #endif
 #endif

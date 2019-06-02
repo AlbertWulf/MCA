@@ -22,11 +22,18 @@ public:
 	int mouse_now;
 	int m_nChannel;
 	int m_nCount;
+	int m_nDetailSum;
 	int cha;
 	int gap;
+	int total_mouse_pos;
+	int mult;//记录因为超出量程导致的计数减半
+	
 	CEdit m_EditChannel;
 	//int m_nChannel;
 	CEdit m_EditCount;
+	CEdit m_EditDetailSum;
+	
+	
 	
 	
 

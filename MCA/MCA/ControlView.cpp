@@ -15,7 +15,8 @@
 #include <time.h>
 #include <algorithm>
 #include "DetailView.h"
-
+#include "TotalView.h"
+#include<windows.h>
 
 // CControlView
 
@@ -28,8 +29,12 @@ CControlView::CControlView()
 	, mul(1)
 	, m_bCheckAuto(FALSE)
 	, m_bwillpaint(FALSE)
+	,runtime(0)
+	,m_nprecount(10000)
+	,m_npretime(100)
+	,pre_count(10000)
+	,pre_time(100)
 
-	, m_nDetailSum(0)
 {
 
 }
@@ -52,8 +57,12 @@ void CControlView::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX, IDC_EDIT_DTCHID, ((CMCADoc*)m_pDocument)->m_nChannel);
 	DDX_Control(pDX, IDC_EDIT_DTCOUNT, ((CMCADoc*)m_pDocument)->m_EditCount);
 	DDX_Text(pDX, IDC_EDIT_DTCOUNT, ((CMCADoc*)m_pDocument)->m_nCount);
-	DDX_Control(pDX, IDC_EDIT_DETAILSUM, m_EditDetailSum);
-	DDX_Text(pDX, IDC_EDIT_DETAILSUM, m_nDetailSum);
+	DDX_Control(pDX, IDC_EDIT_DETAILSUM, ((CMCADoc*)m_pDocument)->m_EditDetailSum);
+	DDX_Text(pDX, IDC_EDIT_DETAILSUM, ((CMCADoc*)m_pDocument)->m_nDetailSum);
+	DDX_Control(pDX, IDC_EDIT_PRECOUNT, m_nEditprecount);
+	DDX_Control(pDX, IDC_EDIT_PRETIME, m_nEditpretime);
+	DDX_Text(pDX, IDC_EDIT_PRECOUNT, m_nprecount);
+	DDX_Text(pDX, IDC_EDIT_PRETIME, m_npretime);
 }
 
 BEGIN_MESSAGE_MAP(CControlView, CFormView)
@@ -67,6 +76,11 @@ BEGIN_MESSAGE_MAP(CControlView, CFormView)
 	ON_WM_TIMER()
 	ON_BN_CLICKED(IDC_CHECK_TIMER, &CControlView::OnBnClickedCheckTimer)
 	ON_WM_MOUSEMOVE()
+	ON_WM_CTLCOLOR()
+	//ON_EN_CHANGE(IDC_EDIT_DETAILSUM, &CControlView::OnEnChangeEditDetailsum)
+	
+	ON_BN_CLICKED(IDC_BUTTON_EXPORT2TXT, &CControlView::OnBnClickedButtonExport2txt)
+	ON_BN_CLICKED(IDC_BUTTON_IMPORTTXT, &CControlView::OnBnClickedButtonImporttxt)
 END_MESSAGE_MAP()
 
 
@@ -117,7 +131,21 @@ void CControlView::OnBnClickedDialogControl()
 
 void CControlView::OnInitialUpdate()
 {
+	m_redcolor=RGB(255,51,93);                      // 红色
+    m_bluecolor=RGB(255,209,71);                    // 蓝色
+	m_greencolor = RGB(0,206,159);
+    m_textcolor=RGB(255,255,255); 
+	m_redbrush.CreateSolidBrush(m_redcolor);      // 红色背景色
+    m_bluebrush.CreateSolidBrush(m_bluecolor);   
+	m_greenbrush.CreateSolidBrush(m_greencolor);
+	//draw background
+	
+	
+	
+	
+	//END draw
 	CFormView::OnInitialUpdate();
+	//m_brush.CreateSolidBrush(RGB(255,0,0));
 	m_nHight = 1.0;
 	m_nPeriod = 0.1;
 	UpdateData(FALSE);
@@ -133,12 +161,15 @@ void CControlView::OnInitialUpdate()
 
 void CControlView::PAINTNEW()
 {
+	
 	UpdateData(TRUE);//获取屏幕值至变量
 	//设置按钮状态
 	m_ButtonPaint.EnableWindow(TRUE);
 	m_ButtonClear.EnableWindow(TRUE);
 	//设置曲线值
+	//
 	
+	//
 	
 	for (int i=0;i<512;i++) 
 		
@@ -146,21 +177,28 @@ void CControlView::PAINTNEW()
 		//srand(time(NULL));
 		//((CMCADoc*)m_pDocument)->m_Dot[i]=m_nHight*(1+cos(m_nPeriod*i));
 		
-		((CMCADoc*)m_pDocument)->m_Dot[i] = ((CMCADoc*)m_pDocument)->m_Dot[i]+0.2*((CMCADoc*)m_pDocument)->Data[i]+rand()%3;		
+		((CMCADoc*)m_pDocument)->m_Dot[i] = ((CMCADoc*)m_pDocument)->m_Dot[i]+0.02*((CMCADoc*)m_pDocument)->Data[i]+rand()%3;		
 		//((CMCADoc*)m_pDocument)->Data[i]=1.02*(((CMCADoc*)m_pDocument)->Data[i])+1;
 	} 
-	((CMCADoc*)GetDocument())->UpdateAllViews(NULL); //重画曲线
+	((CMCADoc*)GetDocument())->UpdateAllViews(this); //重画曲线
 
 }
 void CControlView::OnBnClickedButtonPaint()
 {
 	
 	
-	((CMCADoc*)GetDocument())->UpdateAllViews(NULL); //重画曲线
+	((CMCADoc*)GetDocument())->UpdateAllViews(this); //重画曲线
 	m_bwillpaint = !m_bwillpaint;
 	UpdateData(TRUE); //获取当前选中状态
-	CDetailView*OnPaint();
-if (m_bwillpaint) 
+	//CDetailView*OnPaint();
+	CString str_pc,str_pt;	
+	GetDlgItem(IDC_EDIT_PRECOUNT)->GetWindowText(str_pc);
+	GetDlgItem(IDC_EDIT_PRETIME)->GetWindowText(str_pt);
+	pre_count = _wtoi(str_pc);
+	pre_time = _wtoi(str_pt);
+
+	
+	if (m_bwillpaint) 
 {
 	SetTimer(1,500,NULL);
 	Invalidate( FALSE ); 
@@ -169,6 +207,8 @@ if (m_bwillpaint)
 else 
 { 
 	KillTimer(1);
+    runtime = 0;
+	
 	//不选中，取消自动更新 
 }
 	//UpdateData(TRUE);//获取屏幕值至变量
@@ -222,7 +262,7 @@ void CControlView::OnBnClickedButtonClear()
          ((CMCADoc*)m_pDocument)->m_Dot[i]=0;
         }
        //重画曲线
-   ((CMainFrame *)AfxGetApp()->m_pMainWnd)->GetActiveDocument()->UpdateAllViews( NULL ) ;
+   ((CMainFrame *)AfxGetApp()->m_pMainWnd)->GetActiveDocument()->UpdateAllViews( this ) ;
 }
 
 
@@ -230,11 +270,33 @@ void CControlView::OnTimer(UINT_PTR nIDEvent)
 {
 	// TODO: 在此添加消息处理程序代码和/或调用默认值
 	//自动循环增加曲线幅度
+	
+	int temp_sum = 0;
+	for(int k=0;k<512;k++){
+		temp_sum = temp_sum + ((CMCADoc*)m_pDocument)->m_Dot[k]*((CMCADoc*)m_pDocument)->mult;
+	}
+	if(pre_count<temp_sum){
+		KillTimer(1);
+		temp_sum = 0;
+		m_bwillpaint = !m_bwillpaint;
+		AfxMessageBox(_T("已到达预置计数！"));
+	}
+
+	if(pre_time<runtime){
+		KillTimer(1);
+		runtime = 0;
+		m_bwillpaint = !m_bwillpaint;
+		AfxMessageBox(_T("已达到预置时间！"));
+	}
+	
+    
 	m_nHight = m_nHight + 1;
+	runtime = runtime + 1;
 //((CMCADoc*)m_pDocument)->m_nChannel = ((CMCADoc*)m_pDocument) ->cha;
 	//if(((CMCADoc*)m_pDocument)->m_nChannel<512){
 		//((CMCADoc*)m_pDocument)->m_nCount =((CMCADoc*)m_pDocument) ->m_Dot[((CMCADoc*)m_pDocument)->m_nChannel];}
 	if (((CMCADoc*)m_pDocument)->m_Dot[0]>200){
+		((CMCADoc*)m_pDocument)->mult = ((CMCADoc*)m_pDocument)->mult*2;
 		mul  = mul*2;
 		for(int i =0;i<512;i++){
 			((CMCADoc*)m_pDocument)->m_Dot[i]=(((CMCADoc*)m_pDocument)->m_Dot[i])/2;
@@ -244,9 +306,35 @@ void CControlView::OnTimer(UINT_PTR nIDEvent)
 		//(((CMCADoc*)m_pDocument)->m_Dot,((CMCADoc*)m_pDocument)->m_Dot+512);
 	//if (m_nHight>3)  m_nHight=1.0;
 	//重新画图
+	//CString str_Counts;
+	//((CMCADoc*)m_pDocument)->m_nCount = ((CMCADoc*)m_pDocument)->m_Dot[((CMCADoc*)m_pDocument)->m_nChannel];
+	//str_Counts.Format(_T("%d"),((CMCADoc*)m_pDocument)->m_Dot[((CMCADoc*)m_pDocument)->m_nChannel]);
+	//((CMCADoc*)m_pDocument)->m_EditCount.SetWindowText(str_Counts);
+	
 	UpdateData(FALSE);
+	int gap = ((CMCADoc*)m_pDocument)->lbtn_end-((CMCADoc*)m_pDocument)->lbtn_beg;
+	int chan = (int) ((CMCADoc*)m_pDocument)->lbtn_beg+((CMCADoc*)m_pDocument)->total_mouse_pos*gap/512;
+	CString str_Counts,str_sum;
+	int channel;
+	channel = (int) chan %512;
+	//((CMCADoc*)m_pDocument)->m_nCount = ((CMCADoc*)m_pDocument)->m_Dot[chan];
+	str_Counts.Format(_T("%d"),((CMCADoc*)m_pDocument)->mult*((CMCADoc*)m_pDocument)->m_Dot[channel]);
+	//str_Counts.Format(_T("%d"),channel);
+	((CMCADoc*)m_pDocument)->m_EditCount.SetWindowText(str_Counts);
 	//OnBnClickedButtonPaint();
+	//
+	int detail_sum=0;
+	for(int i = ((CMCADoc*)m_pDocument)->lbtn_beg;i<=((CMCADoc*)m_pDocument)->lbtn_end;i++)
+	{   int k = i%512;
+		detail_sum = detail_sum + ((CMCADoc*)m_pDocument)->m_Dot[k];
+	}
+	detail_sum  = detail_sum *((CMCADoc*)m_pDocument)->mult;
+	str_sum.Format(_T("%d"),detail_sum);
+	((CMCADoc*)m_pDocument)->m_EditDetailSum.SetWindowText(str_sum);
+	
+	//
 	PAINTNEW();
+
 	CFormView::OnTimer(nIDEvent);
 }
 
@@ -276,4 +364,102 @@ void CControlView::OnMouseMove(UINT nFlags, CPoint point)
 	//m_nChannel = ((CMCADoc*)m_pDocument) ->cha;
 
 	CFormView::OnMouseMove(nFlags, point);
+}
+
+
+HBRUSH CControlView::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
+{
+	HBRUSH hbr = CFormView::OnCtlColor(pDC, pWnd, nCtlColor);
+
+	int id =::GetDlgCtrlID(pWnd->m_hWnd);//取得ID
+    if(id == IDC_EDIT_DETAILSUM)
+    {
+        pDC->SetBkColor(m_bluecolor); 
+		pDC->SetTextColor(m_textcolor); // change the text color
+        hbr = (HBRUSH) m_bluebrush;  
+
+		
+    }
+	else if(id ==IDC_EDIT_DTCOUNT)
+	{
+        pDC->SetBkColor(m_redcolor); 
+		pDC->SetTextColor(m_textcolor); // change the text color
+        hbr = (HBRUSH) m_redbrush;  
+	}
+	else if(id ==IDC_EDIT_DTCHID)
+	{
+		pDC->SetBkColor(m_greencolor); 
+		pDC->SetTextColor(m_textcolor); // change the text color
+        hbr = (HBRUSH) m_greenbrush;  
+	}
+
+	return hbr;
+	
+}
+
+
+
+
+
+
+void CControlView::OnBnClickedButtonExport2txt()
+{
+
+	// TODO: 在此添加控件通知处理程序代码
+	BOOL isOpen = FALSE;		//是否打开(否则为保存)	
+	CString defaultDir = L"E:\\FileTest";	//默认打开的文件路径	
+	CString fileName = L"";			//默认打开的文件名	
+	CString filter = L"文件 (*.doc; *.ppt; *.xls; *.txt)|*.doc;*.ppt;*.xls;*.txt||";	//文件过虑的类型	
+	CFileDialog openFileDlg(isOpen, defaultDir, fileName, OFN_HIDEREADONLY|OFN_READONLY, filter, NULL);	
+	openFileDlg.GetOFN().lpstrInitialDir = L"E:\\FileTest\\test.doc";	
+	INT_PTR result = openFileDlg.DoModal();
+	CString filePath = defaultDir + "\\" + fileName;
+	if(result == IDOK) {		filePath = openFileDlg.GetPathName();	}
+
+	try
+	{
+		CStdioFile export_file;
+		export_file.Open(filePath,CFile::modeCreate | CFile::modeWrite | CFile::typeText);
+		for (int i = 0; i < 512; i++)
+		{
+			CString datai;
+			datai.Format(_T("%d    "),((CMCADoc*)m_pDocument)->mult*((CMCADoc*)m_pDocument)->m_Dot[i]);
+			//datai.Format(_T("%d    "),i);
+			export_file.WriteString(datai);
+			export_file.WriteString(_T("\r\n"));
+
+
+		}
+		export_file.Close();
+
+
+	}
+	catch(CFileException* e)
+	{
+		e->ReportError();
+		e->Delete();
+	}
+
+}
+
+
+void CControlView::OnBnClickedButtonImporttxt()
+{
+	
+	BOOL isOpen = TRUE;		//是否打开(否则为保存)	
+	CString defaultDir = L"E:\\FileTest";	//默认打开的文件路径	
+	CString fileName = L"";			//默认打开的文件名	
+	CString filter = L"文件 (*.doc; *.ppt; *.xls; *.txt)|*.doc;*.ppt;*.xls;*.txt||";	//文件过虑的类型	
+	CFileDialog openFileDlg(isOpen, defaultDir, fileName, OFN_HIDEREADONLY|OFN_READONLY, filter, NULL);	
+	openFileDlg.GetOFN().lpstrInitialDir = L"E:\\FileTest\\test.doc";	
+	INT_PTR result = openFileDlg.DoModal();	
+	CString filePath = defaultDir + "\\test.doc";	
+	if(result == IDOK) {		filePath = openFileDlg.GetPathName();	}
+	USES_CONVERSION;
+	char * pFileName = T2A(filePath);
+	FILE*f=fopen(pFileName,"r");
+	for(int i = 0;i<512;i++){
+		fscanf(f,"%d",&((CMCADoc*)m_pDocument)->Data[i]);
+	}
+
 }

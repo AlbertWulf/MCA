@@ -32,6 +32,8 @@ public:
 	afx_msg void OnEnChangeEdit2();
 	CEdit m_EditPeriod;
 	CEdit m_EditHight;
+	CEdit m_nEditprecount;
+	CEdit m_nEditpretime;
 	double m_nHight;
 	double m_nPeriod;
 	CButton m_ButtonPaint;
@@ -46,12 +48,26 @@ public:
 	BOOL m_bwillpaint;
 	afx_msg void OnBnClickedCheckTimer();
 	int mul ;
-	
+	int m_nprecount;
+	int m_npretime;
+	int runtime;
+	int pre_count;
+	int pre_time;
+	CBrush m_brush;
+	CBrush m_redbrush,m_bluebrush,m_greenbrush;
+    COLORREF m_redcolor,m_bluecolor,m_textcolor,m_greencolor;
+
 	//int m_nCount;
 	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
 	afx_msg void PAINTNEW();
-	CEdit m_EditDetailSum;
-	int m_nDetailSum;
+	
+	
+	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
+	//afx_msg void OnEnChangeEditDetailsum();
+	//afx_msg void OnEnChangeEditDetailsum();
+	
+	afx_msg void OnBnClickedButtonExport2txt();
+	afx_msg void OnBnClickedButtonImporttxt();
 };
 
 

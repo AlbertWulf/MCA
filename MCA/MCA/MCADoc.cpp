@@ -34,7 +34,8 @@ CMCADoc::CMCADoc()
 		m_Dot[i]=0;
 		Data[i]=0;
 	}
-
+	mult = 1;
+	
 	// TODO: 在此添加一次性构造代码
 
 }
