@@ -54,6 +54,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
+      <ExceptionHandling>Async</ExceptionHandling>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -113,6 +114,7 @@
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="TotalView.h" />
+    <ClInclude Include="VerticalView.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ChannelView.cpp" />
@@ -127,6 +129,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="TotalView.cpp" />
+    <ClCompile Include="VerticalView.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="MCA.rc" />

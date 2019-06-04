@@ -28,13 +28,16 @@ public:
 	int total_mouse_pos;
 	int mult;//记录因为超出量程导致的计数减半
 	int total_channel;
+	int m_nPeakPosition;
+	int manualsize;
+	int time_count;//1为预置计数，2为预置时间，3为nothing
 	CEdit m_EditChannel;
+
 	//int m_nChannel;
 	CEdit m_EditCount;
 	CEdit m_EditDetailSum;
-	
-	
-	
+	CEdit m_EditiPeakPosition;
+	bool auto_manual;
 	
 
 

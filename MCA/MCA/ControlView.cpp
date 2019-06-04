@@ -13,7 +13,6 @@
 #include "MainFrm.h"
 #include <fstream>
 #include <time.h>
-
 #include "DetailView.h"
 #include "TotalView.h"
 #include<windows.h>
@@ -34,7 +33,7 @@ CControlView::CControlView()
 	,m_npretime(100)
 	,pre_count(10000)
 	,pre_time(100)
-
+	
 {
 
 }
@@ -63,6 +62,9 @@ void CControlView::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_EDIT_PRETIME, m_nEditpretime);
 	DDX_Text(pDX, IDC_EDIT_PRECOUNT, m_nprecount);
 	DDX_Text(pDX, IDC_EDIT_PRETIME, m_npretime);
+	DDX_Control(pDX, IDC_EDIT_PEAKPOSITION, ((CMCADoc*)m_pDocument)->m_EditiPeakPosition);
+	DDX_Text(pDX, IDC_EDIT_PEAKPOSITION, ((CMCADoc*)m_pDocument)->m_nPeakPosition);
+	DDX_Control(pDX, IDC_SPLIT_AUTO, m_SplitButtonAuto);
 }
 
 BEGIN_MESSAGE_MAP(CControlView, CFormView)
@@ -81,6 +83,11 @@ BEGIN_MESSAGE_MAP(CControlView, CFormView)
 	
 	ON_BN_CLICKED(IDC_BUTTON_EXPORT2TXT, &CControlView::OnBnClickedButtonExport2txt)
 	ON_BN_CLICKED(IDC_BUTTON_IMPORTTXT, &CControlView::OnBnClickedButtonImporttxt)
+	ON_BN_CLICKED(IDC_SPLIT_AUTO, &CControlView::OnBnClickedSplitAuto)
+	ON_COMMAND(ID_500, &CControlView::On500)
+	ON_COMMAND(ID_1000, &CControlView::On1000)
+	ON_COMMAND(ID_2000, &CControlView::On2000)
+	ON_COMMAND(ID_AUTO, &CControlView::OnAuto)
 END_MESSAGE_MAP()
 
 
@@ -139,9 +146,11 @@ void CControlView::OnInitialUpdate()
     m_bluebrush.CreateSolidBrush(m_bluecolor);   
 	m_greenbrush.CreateSolidBrush(m_greencolor);
 	//draw background
+	m_SplitButtonAuto.SetDropDownMenu(IDR_MENU_AUTO,0);
 	
-	
-	
+	((CButton *)GetDlgItem(IDC_RADIO3))->SetCheck(TRUE);
+	((CButton *)GetDlgItem(IDC_RADIO2))->SetCheck(FALSE);
+	((CButton *)GetDlgItem(IDC_RADIO1))->SetCheck(FALSE);
 	
 	//END draw
 	CFormView::OnInitialUpdate();
@@ -260,6 +269,8 @@ void CControlView::OnBnClickedButtonClear()
     m_ButtonClear.EnableWindow(TRUE);
      //设置曲线值
 	UpdateData(FALSE);
+	runtime = 0;
+	((CMCADoc*)m_pDocument)->mult = 1;
 	CString have_run;
 	m_nHight = 0;
 	have_run.Format(_T("%d"),m_nHight);
@@ -279,24 +290,10 @@ void CControlView::OnTimer(UINT_PTR nIDEvent)
 {
 	// TODO: 在此添加消息处理程序代码和/或调用默认值
 	//自动循环增加曲线幅度
-	
+	using namespace std;
 	int temp_sum = 0;
-	for(int k=0;k<1024;k++){
-		temp_sum = temp_sum + ((CMCADoc*)m_pDocument)->m_Dot[k]*((CMCADoc*)m_pDocument)->mult;
-	}
-	if(pre_count<temp_sum){
-		KillTimer(1);
-		temp_sum = 0;
-		m_bwillpaint = !m_bwillpaint;
-		AfxMessageBox(_T("已到达预置计数！"));
-	}
-
-	if(pre_time<runtime){
-		KillTimer(1);
-		runtime = 0;
-		m_bwillpaint = !m_bwillpaint;
-		AfxMessageBox(_T("已达到预置时间！"));
-	}
+	bool countischosed = ((CButton *)GetDlgItem(IDC_RADIO1))->GetCheck();
+	bool timeischosed = ((CButton *)GetDlgItem(IDC_RADIO2))->GetCheck();
 	
     
 	m_nHight = m_nHight + 1;
@@ -306,8 +303,9 @@ void CControlView::OnTimer(UINT_PTR nIDEvent)
 		//((CMCADoc*)m_pDocument)->m_nCount =((CMCADoc*)m_pDocument) ->m_Dot[((CMCADoc*)m_pDocument)->m_nChannel];}
 	//int max;
 	//max = *max_element(((CMCADoc*)m_pDocument)->m_Dot,((CMCADoc*)m_pDocument)->m_Dot+1024);
-	
-	if (((CMCADoc*)m_pDocument)->m_Dot[24]>250){
+	//((CMCADoc*)m_pDocument)->m_Dot[24]>
+	int max_dot  = *max_element(((CMCADoc*)m_pDocument)->m_Dot,((CMCADoc*)m_pDocument)->m_Dot+1024);
+	if (max_dot>250 && ((CMCADoc*)m_pDocument)->auto_manual==TRUE){
 		((CMCADoc*)m_pDocument)->mult = ((CMCADoc*)m_pDocument)->mult*2;
 		mul  = mul*2;
 		for(int i =0;i<1024;i++){
@@ -326,7 +324,7 @@ void CControlView::OnTimer(UINT_PTR nIDEvent)
 	UpdateData(FALSE);
 	int gap = ((CMCADoc*)m_pDocument)->lbtn_end-((CMCADoc*)m_pDocument)->lbtn_beg;
 	int chan = (int) ((CMCADoc*)m_pDocument)->lbtn_beg+((CMCADoc*)m_pDocument)->total_mouse_pos*gap/1024;
-	CString str_Counts,str_sum;
+	CString str_Counts,str_sum,str_peakposition;
 	int channel;
 	channel = (int) chan %1024;
 	//((CMCADoc*)m_pDocument)->m_nCount = ((CMCADoc*)m_pDocument)->m_Dot[chan];
@@ -336,16 +334,51 @@ void CControlView::OnTimer(UINT_PTR nIDEvent)
 	//OnBnClickedButtonPaint();
 	//
 	int detail_sum=0;
-	for(int i = ((CMCADoc*)m_pDocument)->lbtn_beg;i<=((CMCADoc*)m_pDocument)->lbtn_end;i++)
+	
+	int lb = ((CMCADoc*)m_pDocument)->lbtn_beg;
+	int le = ((CMCADoc*)m_pDocument)->lbtn_end;
+	
+    //寻找峰位
+	int pos = 0;
+	int peak = 0;
+	for(int i=lb;i<le;i++)
+	{
+		if(((CMCADoc*)m_pDocument)->m_Dot[i]>peak)
+		{
+			peak = ((CMCADoc*)m_pDocument)->m_Dot[i];
+			pos = i;
+		}
+	}
+	//
+ 	for(int i = ((CMCADoc*)m_pDocument)->lbtn_beg;i<=((CMCADoc*)m_pDocument)->lbtn_end;i++)
 	{   int k = i%1024;
 		detail_sum = detail_sum + ((CMCADoc*)m_pDocument)->m_Dot[k];
 	}
 	detail_sum  = detail_sum *((CMCADoc*)m_pDocument)->mult;
+
 	str_sum.Format(_T("%d"),detail_sum);
+	str_peakposition.Format(_T("%d"),pos);
 	((CMCADoc*)m_pDocument)->m_EditDetailSum.SetWindowText(str_sum);
-	
+	((CMCADoc*)m_pDocument)->m_EditiPeakPosition.SetWindowText(str_peakposition);
 	//
 	PAINTNEW();
+	for(int k=0;k<1024;k++){
+		temp_sum = temp_sum + ((CMCADoc*)m_pDocument)->m_Dot[k]*((CMCADoc*)m_pDocument)->mult;
+	}
+	if(pre_count<temp_sum && countischosed==TRUE ){
+		KillTimer(1);
+		temp_sum = 0;
+		m_bwillpaint = !m_bwillpaint;
+		AfxMessageBox(_T("已到达预置计数！"));
+	}
+
+	if(pre_time<runtime && timeischosed == TRUE){
+		KillTimer(1);
+		runtime = 0;
+		m_bwillpaint = !m_bwillpaint;
+		AfxMessageBox(_T("已达到预置时间！"));
+	}
+	
 
 	CFormView::OnTimer(nIDEvent);
 }
@@ -474,4 +507,42 @@ void CControlView::OnBnClickedButtonImporttxt()
 		fscanf(f,"%d",&((CMCADoc*)m_pDocument)->Data[i]);
 	}
 
+}
+
+
+void CControlView::OnBnClickedSplitAuto()
+{
+	// TODO: 在此添加控件通知处理程序代码
+}
+
+
+void CControlView::On500()
+{
+	((CMCADoc*)m_pDocument)->auto_manual = FALSE;
+	((CMCADoc*)m_pDocument)->mult = 2;
+	// TODO: 在此添加命令处理程序代码
+}
+
+
+void CControlView::On1000()
+{
+	((CMCADoc*)m_pDocument)->auto_manual = FALSE;
+	((CMCADoc*)m_pDocument)->mult = 4;
+	// TODO: 在此添加命令处理程序代码
+}
+
+
+void CControlView::On2000()
+{
+	((CMCADoc*)m_pDocument)->auto_manual = FALSE;
+	((CMCADoc*)m_pDocument)->mult = 8;
+	// TODO: 在此添加命令处理程序代码
+}
+
+
+void CControlView::OnAuto()
+{
+	// TODO: 在此添加命令处理程序代码
+	((CMCADoc*)m_pDocument)->auto_manual = TRUE;
+	((CMCADoc*)m_pDocument)->mult = 1;
 }

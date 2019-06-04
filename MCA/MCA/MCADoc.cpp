@@ -36,6 +36,10 @@ CMCADoc::CMCADoc()
 	}
 	mult = 1;
 	total_channel = 1024;
+	lbtn_beg = 0;
+	lbtn_end = 1023;
+	auto_manual = TRUE;
+	time_count = 3;
 	// TODO: 在此添加一次性构造代码
 
 }

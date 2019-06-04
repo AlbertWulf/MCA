@@ -68,6 +68,13 @@ public:
 	
 	afx_msg void OnBnClickedButtonExport2txt();
 	afx_msg void OnBnClickedButtonImporttxt();
+	
+	CSplitButton m_SplitButtonAuto;
+	afx_msg void OnBnClickedSplitAuto();
+	afx_msg void On500();
+	afx_msg void On1000();
+	afx_msg void On2000();
+	afx_msg void OnAuto();
 };
 
 

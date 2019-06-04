@@ -9,6 +9,7 @@
 #include "TotalView.h"
 #include "DetailView.h"
 #include "ChannelView.h"
+#include "VerticalView.h"
 //#pragma comment(lib,"SkinMagic.lib")//调用皮肤lib  
 //#include "SkinMagicLib.h" 
 #ifdef _DEBUG
@@ -74,14 +75,16 @@ BOOL CMainFrame::OnCreateClient(LPCREATESTRUCT /*lpcs*/,
 	CCreateContext* pContext)
 {
 	VERIFY(m_wndSplitter.CreateStatic(this, 1,
-		2,WS_CHILD|WS_VISIBLE, AFX_IDW_PANE_FIRST));
+		3,WS_CHILD|WS_VISIBLE, AFX_IDW_PANE_FIRST));
 	//创建左窗口视图 
 	VERIFY(m_wndSplitter.CreateView(0,0,
-		RUNTIME_CLASS(CControlView), CSize(165, 500), pContext));         
+		RUNTIME_CLASS(CControlView), CSize(165, 500), pContext));  
+	VERIFY(m_wndSplitter.CreateView(0,1,
+		RUNTIME_CLASS(CVerticalView), CSize(165, 50), pContext));  
 	//创建右边上下拆分窗口
 	VERIFY(m_wndSplitter2.CreateStatic(&m_wndSplitter, 3,
 		1,WS_CHILD | WS_VISIBLE,
-		m_wndSplitter.IdFromRowCol(0,1))); 
+		m_wndSplitter.IdFromRowCol(0,2))); 
 	//创建右下窗口视图 
 	VERIFY(m_wndSplitter2.CreateView(0, 0,
 	RUNTIME_CLASS(CTotalView), CSize( 1024, 250), pContext)); 
@@ -95,6 +98,7 @@ BOOL CMainFrame::OnCreateClient(LPCREATESTRUCT /*lpcs*/,
 	CRect r;
     GetClientRect(&r);
     m_wndSplitter.SetColumnInfo( 0, r.Width()/6, 0 );
+	 m_wndSplitter.SetColumnInfo( 1, r.Width()/36, 0 );
     //m_wndSplitter.SetColumnInfo( 0, r.Width()/6, 1 );
     m_wndSplitter.RecalcLayout();
 	m_wndSplitter2.SetRowInfo( 0, r.Height()/2.4, 0);

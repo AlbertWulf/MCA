@@ -8,7 +8,9 @@
 #include "ControlView.h"
 #include "MainFrm.h"
 #include "DetailView.h"
-
+#include <exception>
+#include <stdio.h>
+#include <algorithm>
 // CTotalView
 
 IMPLEMENT_DYNCREATE(CTotalView, CView)
@@ -59,7 +61,11 @@ void CTotalView::Dump(CDumpContext& dc) const
 
 
 void CTotalView::OnPaint()
+
 {
+	using namespace std;
+	
+	
 	CPaintDC dc(this);
 	//画背景颜色 
 	CRect rect; 
@@ -76,13 +82,16 @@ void CTotalView::OnPaint()
 	pen.CreatePen(PS_SOLID,2,RGB(0,134,155));
 	CPen* oldpen = dc.SelectObject(&pen);
 	//画曲线 
+	//int a[] = {1,2,3,4,5};
+	//int b = *max_element(a,a+5);
 
+	//
 	int gap = (int) 1024/(((CMCADoc*)m_pDocument)->lbtn_end-((CMCADoc*)m_pDocument)->lbtn_beg+1);
 	dc.MoveTo(0,rect.Height()-((CMCADoc*)m_pDocument)->m_Dot[((CMCADoc*)m_pDocument)->lbtn_beg]);
 	int bg = 0;
 	for (int i=((CMCADoc*)m_pDocument)->lbtn_beg;i<((CMCADoc*)m_pDocument)->lbtn_end+2 ;i++)
 	{ 
-		dc.LineTo(bg*gap,rect.Height()-4*((CMCADoc*)m_pDocument)->m_Dot[i]); 
+		dc.LineTo(bg*gap,rect.Height()-((CMCADoc*)m_pDocument)->m_Dot[i]); 
 		bg++;
 	} 
 	//释放资源 
@@ -92,7 +101,7 @@ void CTotalView::OnPaint()
 
 }
 
-
+ 
 void CTotalView::DrawLine(int x){
 	CPaintDC dc(this);
 	//画背景颜色 
@@ -121,7 +130,9 @@ void CTotalView::OnLButtonDown(UINT nFlags, CPoint point)
 	int detail_sum=0;//放大区总计数
 	for(int i = ((CMCADoc*)m_pDocument)->lbtn_beg;i<=((CMCADoc*)m_pDocument)->lbtn_end;i++)
 	{
-		detail_sum = detail_sum + ((CMCADoc*)m_pDocument)->m_Dot[i];
+		try{detail_sum = detail_sum + ((CMCADoc*)m_pDocument)->m_Dot[i];}
+		catch(...)
+		{}
 	}
 	detail_sum = detail_sum*((CMCADoc*)m_pDocument)->mult;
 	((CMCADoc*)m_pDocument)->m_nChannel = chan;

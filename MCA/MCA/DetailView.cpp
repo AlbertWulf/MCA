@@ -183,6 +183,23 @@ void CDetailView::OnLButtonUp(UINT nFlags, CPoint point)
 	{
         //CTotalView*OnPaint();
 		//Invalidate(TRUE);
+		//Ñ°ÕÒ·åÎ»
+		CString str_peakposition;
+	int lb = ((CMCADoc*)m_pDocument)->lbtn_beg;
+	int le = ((CMCADoc*)m_pDocument)->lbtn_end;
+	int pos = 0;
+	int peak = 0;
+	for(int i=lb;i<le;i++)
+	{
+		if(((CMCADoc*)m_pDocument)->m_Dot[i]>peak)
+		{
+			peak = ((CMCADoc*)m_pDocument)->m_Dot[i];
+			pos = i;
+		}
+	}
+	str_peakposition.Format(_T("%d"),pos);
+	((CMCADoc*)m_pDocument)->m_EditiPeakPosition.SetWindowText(str_peakposition);
+	//
 		((CMCADoc*)GetDocument())->UpdateAllViews(NULL); //ÖØ»­ÇúÏß
 	}
 	CView::OnLButtonUp(nFlags, point);
