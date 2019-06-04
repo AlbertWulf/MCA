@@ -159,10 +159,11 @@ void CControlView::OnInitialUpdate()
 	m_nPeriod = 0.1;
 	UpdateData(FALSE);
 	m_ButtonClear.EnableWindow(TRUE);
-	FILE*f=fopen("D:\\mydevelopdata\\VSCODE\\MCA\\Cs137.txt","r");
-	for(int i = 0;i<1024;i++){
-		fscanf(f,"%d",&((CMCADoc*)m_pDocument)->Data[i]);
-	}
+	//FILE*f=fopen("D:\\mydevelopdata\\VSCODE\\MCA\\Cs137.txt","r");
+	//FILE*f=fopen("../Cs137.txt","r");
+	//for(int i = 0;i<1024;i++){
+		//fscanf(f,"%d",&((CMCADoc*)m_pDocument)->Data[i]);
+	//}
 
 	// TODO: 在此添加专用代码和/或调用基类
 }

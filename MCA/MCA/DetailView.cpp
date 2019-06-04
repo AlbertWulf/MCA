@@ -12,7 +12,12 @@ IMPLEMENT_DYNCREATE(CDetailView, CView)
 
 CDetailView::CDetailView()
 {
-
+	 m_bMouseDown  = FALSE;
+	 m_RBMouseClick = FALSE;
+	 m_nSel =0;
+	 Cursor_Pos = 0;
+	 judge_first = 0;
+	 sumroi = 0;
 }
 
 CDetailView::~CDetailView()

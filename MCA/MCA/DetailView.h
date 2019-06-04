@@ -8,7 +8,7 @@ class CDetailView : public CView
 	DECLARE_DYNCREATE(CDetailView)
 	bool m_bMouseDown ;
 	bool m_RBMouseClick;
-	int m_nSel;
+	int m_nSel ;
 	int Cursor_Pos;
 	int judge_first;
 	int sumroi;//记录在感兴趣区鼠标移动了多少个像素点

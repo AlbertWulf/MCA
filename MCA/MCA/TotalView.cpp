@@ -17,7 +17,7 @@ IMPLEMENT_DYNCREATE(CTotalView, CView)
 
 CTotalView::CTotalView()
 {
-
+	pointx = 0;
 }
 
 CTotalView::~CTotalView()
@@ -72,8 +72,9 @@ void CTotalView::OnPaint()
 	GetClientRect(&rect); 
 	
 	dc.FillSolidRect(0,0,rect.Width(),rect.Height(),RGB(255,121,100)); //紫色背景
-	dc.FillSolidRect(pointx,0,2,rect.Height(),RGB(255,209,71)); //紫色背景
+	if(pointx>0){dc.FillSolidRect(pointx,0,2,rect.Height(),RGB(255,209,71));} //紫色背景
 	
+
 	
 	
 	//设置曲线颜色 

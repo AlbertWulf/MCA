@@ -84,6 +84,6 @@ void CVerticalView::OnPaint()
 	for(int i =0;i<6;i++){
 	strText.Format(_T("%3d "), 50*i*((CMCADoc*)m_pDocument)->mult); 
 		//CDC  * pDC = GetDC();
-	pDC->TextOutW(0,rect.Height()-i*50-50,strText);
+	pDC->TextOutW(0,rect.Height()-i*50-58,strText);
 	}
 }

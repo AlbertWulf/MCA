@@ -40,6 +40,17 @@ CMCADoc::CMCADoc()
 	lbtn_end = 1023;
 	auto_manual = TRUE;
 	time_count = 3;
+	num_channel = 1024;
+	mouse_now = 0;
+	m_nChannel = 0;
+	m_nCount = 0;
+	m_nDetailSum = 0;
+	cha = 0;
+	gap = 0;
+	total_mouse_pos = 0;
+	m_nPeakPosition = 0;
+	manualsize  =500;
+
 	// TODO: 在此添加一次性构造代码
 
 }

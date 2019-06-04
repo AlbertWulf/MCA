@@ -97,12 +97,12 @@ BOOL CMainFrame::OnCreateClient(LPCREATESTRUCT /*lpcs*/,
 	//
 	CRect r;
     GetClientRect(&r);
-    m_wndSplitter.SetColumnInfo( 0, r.Width()/6, 0 );
+    m_wndSplitter.SetColumnInfo( 0, r.Width()/6.7, 0 );
 	 m_wndSplitter.SetColumnInfo( 1, r.Width()/36, 0 );
     //m_wndSplitter.SetColumnInfo( 0, r.Width()/6, 1 );
     m_wndSplitter.RecalcLayout();
 	m_wndSplitter2.SetRowInfo( 0, r.Height()/2.4, 0);
-	m_wndSplitter2.SetColumnInfo( 0, r.Width()/1.17, 0);
+	m_wndSplitter2.SetColumnInfo( 0, r.Width()/1.19, 0);
 
 	//m_wndSplitter2.SetRowInfo( 0, r.Width()/2, 0 );
 	m_wndSplitter2.SetRowInfo( 1, r.Height()/2.4, 0);
@@ -126,10 +126,11 @@ BOOL CMainFrame::PreCreateWindow(CREATESTRUCT& cs)
 	// TODO: 在此处通过修改
 	
 	//  CREATESTRUCT cs 来修改窗口类或样式
-	cs.cx = 1300;
+	cs.cx = 1350;
 	cs.cy = 700;
 	cs.style = cs.style & (~WS_THICKFRAME);
 	cs.style = cs.style & (~WS_SIZEBOX);
+	cs.style &= ~WS_MAXIMIZEBOX; 
 	
 	return TRUE;
 }

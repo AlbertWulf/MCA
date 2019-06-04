@@ -317,7 +317,7 @@ END
 
 STRINGTABLE
 BEGIN
-    IDR_MAINFRAME           "MCAExampleOne\n\nMCA\n\n\nMCA.Document\nMCA.Document"
+    IDR_MAINFRAME           "MCA\nAlbertWu\nMCA\nMCA\nAlbertWu\nMCA.Document\nMCA.Document"
 END
 
 STRINGTABLE
